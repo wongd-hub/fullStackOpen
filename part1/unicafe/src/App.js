@@ -5,7 +5,7 @@ const Headers = (props) => <h1>{props.text}</h1>
 
 const Button = (props) => <button onClick={props.handleClick}>{props.label}</button>
 
-const StatisticLine = (props) => <p>{props.text}: {props.value}</p>
+const StatisticLine = (props) => <tr><td>{props.text}</td><td>{props.text === "positive" ? props.value + "%" : props.value}</td></tr>
 
 const Statistics = (props) => {
   if (props.total === 0) {
@@ -14,14 +14,16 @@ const Statistics = (props) => {
     )
   } else {
     return (
-      <div className="stats">
-        <StatisticLine text="good" value={props.good}  />
-        <StatisticLine text="neutral" value={props.neutral}  />
-        <StatisticLine text="bad" value={props.bad}  />
-        <StatisticLine text="all" value={props.total}  />
-        <StatisticLine text="average" value={(props.good * 1 + props.neutral * 0 + props.bad * -1) / props.total}  />
-        <StatisticLine text="positive" value={(props.good / props.total) * 100}  />
-      </div>
+      <table className="stats">
+        <tbody>
+          <StatisticLine text="good" value={props.good}  />
+          <StatisticLine text="neutral" value={props.neutral}  />
+          <StatisticLine text="bad" value={props.bad}  />
+          <StatisticLine text="all" value={props.total}  />
+          <StatisticLine text="average" value={(props.good * 1 + props.neutral * 0 + props.bad * -1) / props.total}  />
+          <StatisticLine text="positive" value={(props.good / props.total) * 100}  />
+        </tbody>
+      </table>
     )
   }
 }
