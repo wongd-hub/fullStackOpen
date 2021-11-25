@@ -5,10 +5,9 @@ const Headers = (props) => <h1>{props.text}</h1>
 
 const Button = (props) => <button onClick={props.handleClick}>{props.label}</button>
 
-const Statistics = (props) => {
-  const av = (props.good * 1 + props.neutral * 0 + props.bad * -1) / props.total;
-  const pos = (props.good / props.total) * 100;
+const StatisticLine = (props) => <p>{props.text}: {props.value}</p>
 
+const Statistics = (props) => {
   if (props.total === 0) {
     return (
       <div className="stats"><p>No feedback given</p></div>
@@ -16,19 +15,12 @@ const Statistics = (props) => {
   } else {
     return (
       <div className="stats">
-        <p>
-          good: {props.good} 
-          <br /> 
-          neutral: {props.neutral} 
-          <br /> 
-          bad: {props.bad}
-          <br /> 
-          all: {props.total}
-          <br />
-          average: {!isNaN(av) ? av : 0}
-          <br />
-          positive: {!isNaN(pos) ? pos + "%" : "0%"}
-        </p>
+        <StatisticLine text="good" value={props.good}  />
+        <StatisticLine text="neutral" value={props.neutral}  />
+        <StatisticLine text="bad" value={props.bad}  />
+        <StatisticLine text="all" value={props.total}  />
+        <StatisticLine text="average" value={(props.good * 1 + props.neutral * 0 + props.bad * -1) / props.total}  />
+        <StatisticLine text="positive" value={(props.good / props.total) * 100}  />
       </div>
     )
   }
