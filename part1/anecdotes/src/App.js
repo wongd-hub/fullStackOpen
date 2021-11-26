@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const Button = (props) => <button onClick={props.handleClick}>{props.label}</button>;
 
-const Anecdotes = (props) => {
+const SelectedAnecdote = (props) => {
   return (
     <p>
       {props.selectedAnecdote}
@@ -11,6 +11,8 @@ const Anecdotes = (props) => {
       </p>
   )
 }
+
+const Header = (props) => <h1>{props.text}</h1>
 
 const App = () => {
   const anecdotes = [
@@ -28,6 +30,7 @@ const App = () => {
   // Define state that tracks votes for each anecdote in the `anecdotes` array
   const voteInitiator = anecdotes.map(() => 0);
   const [votes, setVotes] = useState(voteInitiator);
+  const [maxVoteIdx, setMaxVoteIdx] = useState(null);
 
   // Define handler function for clicks that sets selected to random number
   const handleClick = () => {
@@ -39,14 +42,22 @@ const App = () => {
     const stateCopy = [...votes];
     stateCopy[selected] += 1;
     setVotes(stateCopy);
+
+    // Every time a vote is cast, recalculate the highest voted anecdote
+    const maxVal = Math.max(...stateCopy);
+    setMaxVoteIdx(stateCopy.findIndex((el) => el === maxVal));
   }
 
   return (
     <div>
-      <Anecdotes selectedAnecdote={anecdotes[selected]} votes={votes[selected]}/>
+      <Header text="Anecdote of the day"/>
+      <SelectedAnecdote selectedAnecdote={anecdotes[selected]} votes={votes[selected]}/>
       <br />
       <Button handleClick={handleVote} label="Vote" />
       <Button handleClick={handleClick} label="Next anecdote" />
+      <br />
+      <Header text="Anecdote with most votes"/>
+      {Math.max(...votes) !== 0 ? <SelectedAnecdote selectedAnecdote={anecdotes[maxVoteIdx]} votes={votes[maxVoteIdx]}/> : "No votes yet cast"}
     </div>
   )
 }
