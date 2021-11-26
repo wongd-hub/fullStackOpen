@@ -1,6 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
-const Button = (props) => <button onClick={props.handleClick}>{props.label}</button>
+const Button = (props) => <button onClick={props.handleClick}>{props.label}</button>;
+
+const Anecdotes = (props) => {
+  return (
+    <p>
+      {props.selectedAnecdote}
+      <br />
+      Has {props.votes} votes
+      </p>
+  )
+}
 
 const App = () => {
   const anecdotes = [
@@ -13,7 +23,11 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients'
   ]
    
-  const [selected, setSelected] = useState(0)
+  const [selected, setSelected] = useState(0);
+
+  // Define state that tracks votes for each anecdote in the `anecdotes` array
+  const voteInitiator = anecdotes.map(() => 0);
+  const [votes, setVotes] = useState(voteInitiator);
 
   // Define handler function for clicks that sets selected to random number
   const handleClick = () => {
@@ -21,13 +35,20 @@ const App = () => {
     setSelected(randIdx);
   }
 
+  const handleVote = () => {
+    const stateCopy = [...votes];
+    stateCopy[selected] += 1;
+    setVotes(stateCopy);
+  }
+
   return (
     <div>
-      {anecdotes[selected]}
+      <Anecdotes selectedAnecdote={anecdotes[selected]} votes={votes[selected]}/>
       <br />
+      <Button handleClick={handleVote} label="Vote" />
       <Button handleClick={handleClick} label="Next anecdote" />
     </div>
   )
 }
 
-export default App
+export default App;
