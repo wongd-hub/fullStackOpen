@@ -6,10 +6,19 @@ const App = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    setPersons([
-      ...persons,
-      {name: newName}
-    ]);
+
+    if (persons.map((per) => per.name).includes(newName)) {
+      window.alert(`${newName} is already in the phonebook`);
+    } else {
+      setPersons([
+        ...persons,
+        {name: newName}
+      ]);
+    }
+
+    // Clear field
+    setNewName('');
+
   }
 
   const changeHandler = (event) => setNewName(event.target.value)
