@@ -1,9 +1,17 @@
 import React, { useState } from 'react'
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: 'Arto Hellas' }]) 
+  const [persons, setPersons] = useState([{ name: 'Arto Hellas', number: '040-1234567' }]) 
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
 
+  // Handler for name change
+  const changeHandler = (event) => setNewName(event.target.value)
+
+  // Handle for number change
+  const changeNumberHandler = (event) => setNewNumber(event.target.value)
+
+  // Handle form submission
   const submitHandler = (event) => {
     event.preventDefault();
 
@@ -12,30 +20,32 @@ const App = () => {
     } else {
       setPersons([
         ...persons,
-        {name: newName}
+        {name: newName,
+        number: newNumber}
       ]);
     }
 
-    // Clear field
+    // Clear fields
     setNewName('');
+    setNewNumber('');
 
   }
-
-  const changeHandler = (event) => setNewName(event.target.value)
 
   return (
     <div>
       <h2>Phonebook</h2>
       <form onSubmit={submitHandler}>
         <div>
-          name: <input value={newName} onChange={changeHandler}/>
+          name: <input value={newName} onChange={changeHandler} />
+          <br />
+          number: <input value={newNumber} onChange={changeNumberHandler} />
         </div>
         <div>
           <button type="submit">add</button>
         </div>
       </form>
       <h2>Numbers</h2>
-     {persons.map((per) => <p key={per.name}>{per.name}</p>)}
+     {persons.map((per) => <p key={per.name + per.number}>{per.name} {per.number}</p>)}
     </div>
   )
 }
