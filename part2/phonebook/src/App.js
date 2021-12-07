@@ -37,7 +37,7 @@ const App = () => {
       .then(response => {
         setPersons(response.data)
       })
-  })
+  }, [])
 
   // Handler for name change
   const changeHandler = (event) => setNewName(event.target.value)
