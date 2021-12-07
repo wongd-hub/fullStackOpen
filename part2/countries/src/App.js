@@ -15,7 +15,7 @@ const CountryFeature = (props) => {
   return (
     <div className="country-feature">
       <h2>{props.country.name.common}</h2>
-      <img src={props.country.flags.png} />
+      <img src={props.country.flags.png} alt={`Flag of ${props.country.name.common}`}/>
       <p>Capital: {props.country.capital}</p> 
       <p>Population: {props.country.population}</p>
       <h3>Languages</h3>
@@ -30,10 +30,10 @@ const CountryFeature = (props) => {
   )
 }
 
-
 function App() {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState([]);
+  const [spotlightCountry, setSpotlightCountry] = useState(undefined);
 
   useEffect(() => {
     axios
@@ -47,6 +47,7 @@ function App() {
             if (el.name.common.toLowerCase().includes(search.toLowerCase())) {
               tmpResults.push(el);
             }
+            return null;
           })
 
         setResults(tmpResults);
@@ -55,6 +56,8 @@ function App() {
 
   const changeSearchHandler = (event) => setSearch(event.target.value);
 
+  // const showMoreHandler = (country) => { return ( setSpotlightCountry(country) ) }
+
   return (
     <>
       <Form search={search} changeSearchHandler={changeSearchHandler} />
@@ -62,9 +65,23 @@ function App() {
         {
           search.length === 0 ? <p>Awaiting input</p> :
           results.length === 0 ? <p>No results</p> :
-          results.length === 1 ? <CountryFeature country={results[0]}/> :
+          results.length === 1 ? <CountryFeature country={results[0]} /> :
           results.length > 10 ? <p>Too many matches, specify another filter</p> :
-          results.map(el => <p key={el.cioc}>{el.name.common}</p>)
+          (
+            <>
+              <div>
+                {
+                  results.map(el => {
+                    return (
+                      <p key={el.cioc}>{el.name.common} <button onClick={() => {setSpotlightCountry(el); console.log('setting spotlight as ', el)}}>Show more</button></p>
+                  )})
+                }
+              </div>
+              {typeof spotlightCountry !== 'undefined' ? 
+                <CountryFeature country={spotlightCountry} /> : 
+                <></>}
+            </>
+          )
         }
       </div>
     </>
