@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
+
 const Form = (props) => {
   return (
     <form>
@@ -12,6 +13,17 @@ const Form = (props) => {
 }
 
 const CountryFeature = (props) => {
+  const [weatherDat, setWeatherDat] = useState({});
+
+  useEffect(() => {
+    const apiKey = process.env.REACT_APP_API_KEY; 
+
+    axios
+      .get(`https://api.openweathermap.org/data/2.5/weather?q=${props.country.capital}&appid=${apiKey}&units=metric`)
+      .then(response => setWeatherDat(response.data))
+      .catch(error => {if (error.response) { setWeatherDat(undefined) } })
+  }, [props.country.capital])
+
   return (
     <div className="country-feature">
       <h2>{props.country.name.common}</h2>
@@ -23,9 +35,22 @@ const CountryFeature = (props) => {
         {
           Object
           .values(props.country.languages)
-          .map(el => <li key={el}>{el}</li>)
+          .map((el, i) => <li key={`${el}${i}`}>{el}</li>)
         }
       </ul>
+
+      { Object.keys(weatherDat).length > 0 ?
+        (
+          <>
+            <h2>Weather in {props.country.capital}</h2>
+            <p>Temperature: {weatherDat.main.temp} C, {weatherDat.weather[0].description}</p>
+            <p>Wind: {weatherDat.wind.speed} meters/s {weatherDat.wind.deg} degrees</p>
+          </>
+        ) :
+        <></>
+    }
+      
+
     </div>
   )
 }
@@ -51,12 +76,14 @@ function App() {
           })
 
         setResults(tmpResults);
+
       })
   }, [search])
 
-  const changeSearchHandler = (event) => setSearch(event.target.value);
-
-  // const showMoreHandler = (country) => { return ( setSpotlightCountry(country) ) }
+  const changeSearchHandler = (event) => {
+    setSearch(event.target.value);
+    setSpotlightCountry(undefined);
+  }
 
   return (
     <>
@@ -71,9 +98,9 @@ function App() {
             <>
               <div>
                 {
-                  results.map(el => {
+                  results.map((el, i) => {
                     return (
-                      <p key={el.cioc}>{el.name.common} <button onClick={() => {setSpotlightCountry(el); console.log('setting spotlight as ', el)}}>Show more</button></p>
+                      <p key={`${el.cioc}${i}`}>{el.name.common} <button onClick={() => setSpotlightCountry(el)}>Show more</button></p>
                   )})
                 }
               </div>
