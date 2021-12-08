@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import personService from './services/persons';
 
@@ -47,8 +46,34 @@ const App = () => {
   const submitHandler = (event) => {
     event.preventDefault();
 
-    if (persons.map((per) => per.name).includes(newName)) {
-      window.alert(`${newName} is already in the phonebook`);
+    if (persons.map(per => per.name).includes(newName)) {
+      const userConfirm = window.confirm(`${newName} is already in the phonebook, replace the old number with a new one?`);
+      // const id = persons.map(per => per.name).indexOf(newName) + 1;
+      // The above code doesn't always work, trying a more sophisticated way of pulling the id of the replaced name...
+
+      if (userConfirm) {
+        personService
+          .getAll()
+          // ... Return array of names in order, then get index of the one that matches
+          .then(response => response.map(el => el.name).indexOf(newName))
+          // Then query for object at index that was output previously and grab id
+          .then(idx => personService
+              .getAll()
+              .then(response => response[idx].id)
+          )
+          // Once the index is confirmed, perform update and set state to refresh app
+          .then(id => personService 
+            .update(id, {
+              name: newName,
+              number: newNumber
+            })
+            .then(response => {
+              setPersons(persons.map(per => per.id !== id ? per : response))
+            })
+          )
+          .catch(error => console.log('Failed to update'))
+      }
+
     } else {
       // Post the person to the server and update the app's state
       personService
