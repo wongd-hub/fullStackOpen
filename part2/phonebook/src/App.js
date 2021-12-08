@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import personService from './services/persons';
 
 const Filter = (props) => <form>filter shown with: <input value={props.filter} onChange={props.changeFilterHandler} /></form>
 
@@ -32,10 +33,10 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
-        setPersons(response.data)
+        setPersons(response)
       })
   }, [])
 
@@ -56,20 +57,17 @@ const App = () => {
       window.alert(`${newName} is already in the phonebook`);
     } else {
       // Post the person to the server and update the app's state
-      axios
-        .post('http://localhost:3001/persons', {
+      personService
+        .create({
           name: newName,
           number: newNumber
         })
         .then(response => {
           setPersons([
             ...persons,
-            response.data
+            response
           ])
         })
-      
-      
-
     }
 
     // Clear fields
