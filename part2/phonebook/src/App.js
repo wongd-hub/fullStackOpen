@@ -55,11 +55,21 @@ const App = () => {
     if (persons.map((per) => per.name).includes(newName)) {
       window.alert(`${newName} is already in the phonebook`);
     } else {
-      setPersons([
-        ...persons,
-        {name: newName,
-         number: newNumber}
-      ]);
+      // Post the person to the server and update the app's state
+      axios
+        .post('http://localhost:3001/persons', {
+          name: newName,
+          number: newNumber
+        })
+        .then(response => {
+          setPersons([
+            ...persons,
+            response.data
+          ])
+        })
+      
+      
+
     }
 
     // Clear fields
