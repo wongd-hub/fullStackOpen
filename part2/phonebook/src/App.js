@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import personService from './services/persons';
 
 const Filter = (props) => <form>filter shown with: <input value={props.filter} onChange={props.changeFilterHandler} /></form>
@@ -17,12 +17,6 @@ const AddNewPerson = (props) => {
         <button type="submit">add</button>
       </div>
     </form>
-  )
-}
-
-const ShowPhonebook = (props) => {
-  return (
-    props.personsToShow.map((per) => <p key={per.name + per.number}>{per.name} {per.number}</p>)
   )
 }
 
@@ -76,6 +70,25 @@ const App = () => {
 
   }
 
+  const fullDeleteHandle = (id) => {
+    const userConfirm = window.confirm(`Do you really want to delete person ${id}?`);
+
+    if (userConfirm) {
+      personService
+      .handleDelete(id)
+      .then(() => {
+        // Re-GET persons to refresh the app
+        personService
+        .getAll()
+        .then(response => {
+          setPersons(response)
+        })
+      });
+    } else {
+      return
+    }
+  }
+
   let personsToShow = []; 
   if (filter === '') {
     personsToShow = persons;
@@ -92,7 +105,10 @@ const App = () => {
       <Filter filter={filter} changeFilterHandler={changeFilterHandler} />
       <AddNewPerson submitHandler={submitHandler} newName={newName} changeHandler={changeHandler} newNumber={newNumber} changeNumberHandler={changeNumberHandler} />
       <h2>Numbers</h2>
-      <ShowPhonebook personsToShow={personsToShow} />
+      {
+        personsToShow
+          .map((per) => <p key={per.name + per.number}>{per.name} {per.number} <button onClick={() => fullDeleteHandle(per.id)}>Delete</button></p>)
+      }
     </div>
   )
 }

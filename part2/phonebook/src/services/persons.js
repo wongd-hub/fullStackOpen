@@ -25,8 +25,18 @@ const update = (id, newObject) => {
     )
 }
 
+const handleDelete = (id) => {
+    console.log(`deleting ${baseUrl}/${id}` )
+
+    return (
+        axios
+            .delete(`${baseUrl}/${id}`)
+    )
+}
+
 export default {
     getAll,
     create,
-    update
+    update,
+    handleDelete
 }
