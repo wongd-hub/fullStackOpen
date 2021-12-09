@@ -19,11 +19,27 @@ const AddNewPerson = (props) => {
   )
 }
 
+const Message = ({ message, style }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div style={style}>
+      <p>{message}</p>
+    </div> 
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([{ name: 'Arto Hellas', number: '040-1234567' }]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState({
+    message: null,
+    style: null
+  });
 
   useEffect(() => {
     personService
@@ -71,7 +87,40 @@ const App = () => {
               setPersons(persons.map(per => per.id !== id ? per : response))
             })
           )
-          .catch(error => console.log('Failed to update'))
+          .then(response => {
+            setMessage({
+              message: `Updated successfully`,
+              style: {
+                border: '3px solid green',
+                color: 'green',
+                marginBottom: '30px'
+              }
+            })
+
+            setTimeout(() => {
+              setMessage({
+                message: null,
+                style: null
+              })
+            }, 5000)
+          })
+          .catch(error => {
+            setMessage({
+              message: `Unsuccessful in updating`,
+              style: {
+                border: '3px solid red',
+                color: 'red',
+                marginBottom: '30px'
+              }
+            })
+
+            setTimeout(() => {
+              setMessage({
+                message: null,
+                style: null
+              })
+            }, 5000)
+          })
       }
 
     } else {
@@ -86,6 +135,40 @@ const App = () => {
             ...persons,
             response
           ])
+        })
+        .then(response => {
+          setMessage({
+            message: `Added successfully`,
+            style: {
+              border: '3px solid green',
+              color: 'green',
+              marginBottom: '30px'
+            }
+          })
+
+          setTimeout(() => {
+            setMessage({
+              message: null,
+              style: null
+            })
+          }, 5000)
+        })
+        .catch(error => {
+          setMessage({
+            message: `Unsuccessful in adding`,
+            style: {
+              border: '3px solid red',
+              color: 'red',
+              marginBottom: '30px'
+            }
+          })
+
+          setTimeout(() => {
+            setMessage({
+              message: null,
+              style: null
+            })
+          }, 5000)
         })
     }
 
@@ -108,6 +191,40 @@ const App = () => {
         .then(response => {
           setPersons(response)
         })
+      })
+      .then(response => {
+        setMessage({
+          message: `Deleted successfully`,
+          style: {
+            border: '3px solid green',
+            color: 'green',
+            marginBottom: '30px'
+          }
+        })
+
+        setTimeout(() => {
+          setMessage({
+            message: null,
+            style: null
+          })
+        }, 5000)
+      })
+      .catch(error => {
+        setMessage({
+          message: `Unsuccessful in deleting`,
+          style: {
+            border: '3px solid red',
+            color: 'red',
+            marginBottom: '30px'
+          }
+        })
+
+        setTimeout(() => {
+          setMessage({
+            message: null,
+            style: null
+          })
+        }, 5000)
       });
     } else {
       return
@@ -127,6 +244,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Message message={message.message} style={message.style} />
       <Filter filter={filter} changeFilterHandler={changeFilterHandler} />
       <AddNewPerson submitHandler={submitHandler} newName={newName} changeHandler={changeHandler} newNumber={newNumber} changeNumberHandler={changeNumberHandler} />
       <h2>Numbers</h2>
