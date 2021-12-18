@@ -62,115 +62,78 @@ const App = () => {
   const submitHandler = (event) => {
     event.preventDefault();
 
-    if (persons.map(per => per.name).includes(newName)) {
-      const userConfirm = window.confirm(`${newName} is already in the phonebook, replace the old number with a new one?`);
-      // const id = persons.map(per => per.name).indexOf(newName) + 1;
-      // The above code doesn't always work, trying a more sophisticated way of pulling the id of the replaced name...
+    let userConfirm = undefined;
 
-      if (userConfirm) {
-        personService
-          .getAll()
-          // ... Return array of names in order, then get index of the one that matches
-          .then(response => response.map(el => el.name).indexOf(newName))
-          // Then query for object at index that was output previously and grab id
-          .then(idx => personService
-              .getAll()
-              .then(response => response[idx].id)
-          )
-          // Once the index is confirmed, perform update and set state to refresh app
-          .then(id => personService 
-            .update(id, {
-              name: newName,
-              number: newNumber
-            })
-            .then(response => {
-              setPersons(persons.map(per => per.id !== id ? per : response))
-            })
-          )
-          .then(response => {
-            setMessage({
-              message: `Updated successfully`,
-              style: {
-                border: '3px solid green',
-                color: 'green',
-                marginBottom: '30px'
-              }
-            })
+    if (persons.map(per => per.name).filter(el => el.toLowerCase() === newName.toLowerCase()).length > 0) {
+      userConfirm = window.confirm(`${newName} is already in the phonebook, replace the old number with a new one?`);
 
-            setTimeout(() => {
-              setMessage({
-                message: null,
-                style: null
-              })
-            }, 5000)
-          })
-          .catch(error => {
-            setMessage({
-              message: `Unsuccessful in updating`,
-              style: {
-                border: '3px solid red',
-                color: 'red',
-                marginBottom: '30px'
-              }
-            })
+      if (!userConfirm) {
+        
+        // Clear fields
+        setNewName('');
+        setNewNumber('');
 
-            setTimeout(() => {
-              setMessage({
-                message: null,
-                style: null
-              })
-            }, 5000)
-          })
+        return null;
+
       }
+    }
 
-    } else {
-      // Post the person to the server and update the app's state
-      personService
-        .create({
-          name: newName,
-          number: newNumber
-        })
-        .then(response => {
+    // Post the person to the server and update the app's state
+    personService
+      .create({
+        name: newName,
+        number: newNumber
+      })
+      .then(response => {
+
+        if (userConfirm) {
+
+          setPersons(persons.map(per => per.name.toLowerCase() !== newName.toLowerCase() ? per : response))
+
+        } else {
+
           setPersons([
             ...persons,
             response
           ])
-        })
-        .then(response => {
-          setMessage({
-            message: `Added successfully`,
-            style: {
-              border: '3px solid green',
-              color: 'green',
-              marginBottom: '30px'
-            }
-          })
 
-          setTimeout(() => {
-            setMessage({
-              message: null,
-              style: null
-            })
-          }, 5000)
-        })
-        .catch(error => {
-          setMessage({
-            message: `Unsuccessful in adding`,
-            style: {
-              border: '3px solid red',
-              color: 'red',
-              marginBottom: '30px'
-            }
-          })
+        }
 
-          setTimeout(() => {
-            setMessage({
-              message: null,
-              style: null
-            })
-          }, 5000)
+      })
+      .then(response => {
+        setMessage({
+          message: userConfirm ? `Updated successfully` : `Added successfully`,
+          style: {
+            border: '3px solid green',
+            color: 'green',
+            marginBottom: '30px'
+          }
         })
-    }
+
+        setTimeout(() => {
+          setMessage({
+            message: null,
+            style: null
+          })
+        }, 5000)
+      })
+      .catch(error => {
+        setMessage({
+          message: `Unsuccessful in adding`,
+          style: {
+            border: '3px solid red',
+            color: 'red',
+            marginBottom: '30px'
+          }
+        })
+
+        setTimeout(() => {
+          setMessage({
+            message: null,
+            style: null
+          })
+        }, 5000)
+      })
 
     // Clear fields
     setNewName('');
